@@ -55,15 +55,18 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, Object> userMap) {
+	public ResponseEntity<Object> login(@RequestBody Map<String, Object> userMap) {
 		String email = (String) userMap.get("email");
         String password = (String) userMap.get("password");
         User user = userService.validateUser(email, password);
-        return new ResponseEntity<>(generateJWTToken(user), HttpStatus.OK);
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("user", user);
+        data.putAll(generateJWTToken(user));
+        return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 	
 	@PostMapping("/signup")
-	public ResponseEntity<Map<String, String>> signup(@RequestBody User user) {		
+	public ResponseEntity<Object> signup(@RequestBody User user) {	
 		User userCreated = userService.registerUser(user);
 		ConfirmationToken confirmationToken = new ConfirmationToken(userCreated);
 		
@@ -77,10 +80,12 @@ public class UserController {
 				+ "http://localhost:9090/confirm-account?token="+confirmationToken.getConfirmationToken());
 		emailSenderService.sendEmail(mailMessage);
 		
-		Map<String, String> map = generateJWTToken(userCreated);
-		map.put("message", "Account created");
-		map.put("description", "check your email to complete registration");
-		return new ResponseEntity<>(map, HttpStatus.OK);
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("user", userCreated);
+		data.putAll(generateJWTToken(userCreated));
+		data.put("message", "Dear " + userCreated.getFirstName() + ", check verfication link to your e-mail to complete registration.");
+		
+		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/confirm-account",  method= {RequestMethod.GET, RequestMethod.POST})
