@@ -77,7 +77,7 @@ public class UserController {
 		mailMessage.setSubject("Complete Registration!");
 		mailMessage.setFrom("explore.rwanda.online@gmail.com");
 		mailMessage.setText("To confirm your account, please click here: "
-				+ "http://localhost:9090/confirm-account?token="+confirmationToken.getConfirmationToken());
+				+ "https://cniyindagiriye.github.io/explore-rwanda-online-frontend/confirm-account?token="+confirmationToken.getConfirmationToken());
 		emailSenderService.sendEmail(mailMessage);
 		
 		Map<String, Object> data = new HashMap<String, Object>();
