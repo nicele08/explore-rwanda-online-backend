@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rwanda.online.exception.ResourceNotFoundException;
@@ -21,6 +22,7 @@ import com.rwanda.online.repository.AccomodationRepository;
 import com.rwanda.online.repository.LocationRepository;
 
 @RestController
+@RequestMapping("/api/v1/")
 public class AccomodationController {
 	
 	@Autowired
@@ -39,7 +41,7 @@ public class AccomodationController {
         @Valid @RequestBody Accomodation accomodation) throws ResourceNotFoundException {
         return locationRepository.findById(locationId).map(location -> {
         	accomodation.setLocation(location);
-            return accomodationRepository.save(accomodation);
+            return accomodationRepository.save(accomodation);           
         }).orElseThrow(() -> new ResourceNotFoundException("location not found"));
     }
 	

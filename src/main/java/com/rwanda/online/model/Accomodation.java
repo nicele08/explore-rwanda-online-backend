@@ -3,6 +3,7 @@ package com.rwanda.online.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,8 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name="accomodations")
+@Table(name="accomodation")
 public class Accomodation extends AuditModel {
 	
 	private static final long serialVersionUID = 1L;
@@ -21,7 +24,7 @@ public class Accomodation extends AuditModel {
 	@Column(name="host_id")
 	private Long id;
 	
-	@Column(name = "name", nullable = false, length = 64)
+	@Column(name = "name", unique = true, nullable = false, length = 64)
 	private String name;
 	
 	@Column(name = "description", nullable = false, length = 600)
@@ -36,8 +39,9 @@ public class Accomodation extends AuditModel {
 	@Column(name = "facilities", nullable = false, length = 200)
 	private String[] facilities;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn (name="location_id", nullable=false)
+	@JsonIgnore
 	private Location location;
 
 	public Accomodation() {
