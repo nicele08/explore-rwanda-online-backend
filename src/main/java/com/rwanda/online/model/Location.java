@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,7 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "locations")
+@Table(name = "location")
 public class Location extends AuditModel {
 	private static final long serialVersionUID = 1L;
 
@@ -21,12 +22,10 @@ public class Location extends AuditModel {
 	@Column(name="location_id")
 	private Long id;
 	
-	@Column(name = "district", nullable = false, length = 64)
+	@Column(name = "district", nullable = false, unique = true, length = 64)
 	private String district;
 	
-	@OneToMany(mappedBy = "accomodation", cascade = {
-	        CascadeType.ALL
-	    })
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List < Accomodation > accomodations;
 
 	public Location() {
@@ -55,6 +54,9 @@ public class Location extends AuditModel {
 		this.district = district;
 	}
 
+	@OneToMany(mappedBy = "locations", cascade = {
+	        CascadeType.ALL
+	    })
 	public List<Accomodation> getAccomodations() {
 		return accomodations;
 	}
