@@ -38,7 +38,10 @@ public class User {
 		
 	}
 	
-	public User(String firstName, String lastName, String email, String password, boolean enabled) {
+	
+	
+	public User(String firstName, String lastName, @Email(message = "Email should be valid") String email,
+			String password, boolean enabled) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -46,6 +49,8 @@ public class User {
 		this.password = password;
 		this.enabled = enabled;
 	}
+
+
 
 	public Long getId() {
 		return id;
