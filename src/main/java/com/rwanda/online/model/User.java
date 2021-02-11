@@ -1,18 +1,29 @@
 package com.rwanda.online.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends AuditModel{
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="user_id")
@@ -33,22 +44,37 @@ public class User {
 	@Column(name = "enabled")
     private boolean enabled;
 	
+	@OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Trip> requesters;
+	
 	public User() {
-		
+		super();
 	}
+
 	
-	
-	
+
 	public User(String firstName, String lastName, @Email(message = "Email should be valid") String email,
-			String password, boolean enabled) {
+			String password, boolean enabled, List<Trip> requesters) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.enabled = enabled;
+		this.requesters = requesters;
 	}
 
+
+
+	public List<Trip> getRequester() {
+		return requesters;
+	}
+
+
+	public void setRequester(List<Trip> requesters) {
+		this.requesters = requesters;
+	}
 
 
 	public Long getId() {
@@ -89,5 +115,17 @@ public class User {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+
+	public List<Trip> getRequesters() {
+		return requesters;
+	}
+
+
+	public void setRequesters(List<Trip> requesters) {
+		this.requesters = requesters;
+	}
+	
+	
 	
 }

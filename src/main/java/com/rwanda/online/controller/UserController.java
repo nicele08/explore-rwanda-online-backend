@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rwanda.online.constants.Constants;
+import com.rwanda.online.exception.AuthException;
 import com.rwanda.online.exception.ResourceNotFoundException;
 import com.rwanda.online.model.ConfirmationToken;
 import com.rwanda.online.model.User;
@@ -59,6 +60,9 @@ public class UserController {
 		String email = (String) userMap.get("email");
         String password = (String) userMap.get("password");
         User user = userService.validateUser(email, password);
+        if(!user.isEnabled()) {
+        	throw new AuthException("Account not validated");
+        }
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", user);
         data.putAll(generateJWTToken(user));

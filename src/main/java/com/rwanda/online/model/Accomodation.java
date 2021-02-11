@@ -1,5 +1,7 @@
 package com.rwanda.online.model;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,17 +42,25 @@ public class Accomodation extends AuditModel {
 	@Column(name = "facilities", nullable = false, length = 200)
 	private String[] facilities;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn (name="location_id", nullable=false)
 	@JsonIgnore
 	private Location location;
+	
+	@OneToMany(mappedBy = "accomodation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Room> rooms;
+	
+	@OneToMany(mappedBy = "accomodation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Trip> trips;
 
 	public Accomodation() {
 		super();
 	}
-
+	
 	public Accomodation(String name, String description, String longitude, String[] images, String[] facilities,
-			Location location) {
+			Location location, List<Room> rooms, List<Trip> trips) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -57,6 +68,16 @@ public class Accomodation extends AuditModel {
 		this.images = images;
 		this.facilities = facilities;
 		this.location = location;
+		this.rooms = rooms;
+		this.trips = trips;
+	}
+
+	public void setRooms(List<Room> rooms) {
+		this.rooms = rooms;
+	}
+
+	public void setTrips(List<Trip> trips) {
+		this.trips = trips;
 	}
 
 	public Long getId() {
@@ -114,5 +135,16 @@ public class Accomodation extends AuditModel {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	
+
+	public List<Room> getRooms() {
+		return rooms;
+	}
+
+	public List<Trip> getTrips() {
+		return trips;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }

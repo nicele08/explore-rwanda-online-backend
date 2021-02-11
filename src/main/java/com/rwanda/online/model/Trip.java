@@ -1,61 +1,76 @@
 package com.rwanda.online.model;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "trips")
-public class Trip {
+@Table(name = "trip")
+public class Trip extends AuditModel {
+	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="user_id")
+	@Column(name="trip_id")
 	private Long id;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "requester_id")
-	private User userRequester;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "manager_id")
-	private User userManager;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name="requester_id", nullable=false)
+	@JsonIgnore
+	private User requester;
 	
 	@Column(name = "request_status", nullable = false, length = 20)
-	private String request_status;
+	private String requestStatus;
 	
-	
-	private Long from;
-	private Long to;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name="location_id", nullable=false)
+	@JsonIgnore
+	private Location location;
 	
 	@Column(name = "travel_type", nullable = false, length = 64)
-	private String travel_type;
+	private String travelType;
 	
-	@Column(name = "travel_reason", nullable = false, length = 64)
-	private String travel_reason;
+	@Column(name = "travel_reason", nullable = false, length = 300)
+	private String travelReason;
 	
-	private Long accomodation;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn (name="accomodation_id", nullable = false)
+	@JsonIgnore
+	private Accomodation accomodation;
 	
+	@OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Comment> comments;
 	
-
 	public Trip() {
 		super();
 	}
 
+	
 
-
-	public Trip(User userRequester, User userManager, String request_status, String travel_type, String travel_reason) {
+	public Trip(User user, String requestStatus, Location location, String travelType, String travelReason,
+			Accomodation accomodation, List<Comment> comments) {
 		super();
-		this.userRequester = userRequester;
-		this.userManager = userManager;
-		this.request_status = request_status;
-		this.travel_type = travel_type;
-		this.travel_reason = travel_reason;
+		this.requester = user;
+		this.requestStatus = requestStatus;
+		this.location = location;
+		this.travelType = travelType;
+		this.travelReason = travelReason;
+		this.accomodation = accomodation;
+		this.comments = comments;
 	}
 
 
@@ -64,61 +79,96 @@ public class Trip {
 		return id;
 	}
 
+
+
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public User getUserRequester() {
-		return userRequester;
-	}
 
-	public void setUserRequester(User userRequester) {
-		this.userRequester = userRequester;
-	}
 
-	public User getUserManager() {
-		return userManager;
-	}
-
-	public void setUserManager(User userManager) {
-		this.userManager = userManager;
+	public User getRequester() {
+		return requester;
 	}
 
 
 
-	public String getRequest_status() {
-		return request_status;
+	public void setRequester(User requester) {
+		this.requester = requester;
 	}
 
 
 
-	public void setRequest_status(String request_status) {
-		this.request_status = request_status;
+	public String getRequestStatus() {
+		return requestStatus;
 	}
 
 
 
-	public String getTravel_type() {
-		return travel_type;
+	public void setRequestStatus(String requestStatus) {
+		this.requestStatus = requestStatus;
 	}
 
 
 
-	public void setTravel_type(String travel_type) {
-		this.travel_type = travel_type;
+	public Location getLocation() {
+		return location;
 	}
 
 
 
-	public String getTravel_reason() {
-		return travel_reason;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 
 
-	public void setTravel_reason(String travel_reason) {
-		this.travel_reason = travel_reason;
+	public String getTravelType() {
+		return travelType;
 	}
+
+
+
+	public void setTravelType(String travelType) {
+		this.travelType = travelType;
+	}
+
+
+
+	public String getTravelReason() {
+		return travelReason;
+	}
+
+
+
+	public void setTravelReason(String travelReason) {
+		this.travelReason = travelReason;
+	}
+
+
+
+	public Accomodation getAccomodation() {
+		return accomodation;
+	}
+
+
+
+	public void setAccomodation(Accomodation accomodation) {
+		this.accomodation = accomodation;
+	}
+
+
+
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
+	}
+
 	
 	
 }

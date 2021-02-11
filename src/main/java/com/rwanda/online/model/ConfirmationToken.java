@@ -32,7 +32,12 @@ public class ConfirmationToken {
     @JoinColumn(nullable = false, name = "id")
     private User user;
 
-    public ConfirmationToken(User user) {
+    
+    public ConfirmationToken() {
+		super();
+	}
+
+	public ConfirmationToken(User user) {
         this.user = user;
         createdDate = new Date();
         confirmationToken = UUID.randomUUID().toString();

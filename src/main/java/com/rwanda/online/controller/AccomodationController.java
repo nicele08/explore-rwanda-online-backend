@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.rwanda.online.exception.ResourceNotFoundException;
 import com.rwanda.online.model.Accomodation;
 import com.rwanda.online.repository.AccomodationRepository;
 import com.rwanda.online.repository.LocationRepository;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class AccomodationController {
 	
 	@Autowired
@@ -45,12 +44,12 @@ public class AccomodationController {
         }).orElseThrow(() -> new ResourceNotFoundException("location not found"));
     }
 	
-	@PutMapping("/locations/{locationId}/accomodation/{accomodationId}")
+	@PutMapping("/locations/{locationId}/accomodations/{accomodationId}")
     public Accomodation updateAccomodation(@PathVariable(value = "locationId") Long locationId,
         @PathVariable(value = "accomodationId") Long accomodationId, @Valid @RequestBody Accomodation accomodationDetails)
     throws ResourceNotFoundException {
         if (!locationRepository.existsById(locationId)) {
-            throw new ResourceNotFoundException("instructorId not found");
+            throw new ResourceNotFoundException("locationId not found");
         }
 
         return accomodationRepository.findById(accomodationId).map(accomodation -> {
@@ -60,10 +59,10 @@ public class AccomodationController {
             accomodation.setImages(accomodationDetails.getImages());
             accomodation.setLongitude(accomodationDetails.getLongitude());
             return accomodationRepository.save(accomodation);
-        }).orElseThrow(() -> new ResourceNotFoundException("course id not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("accomodation id not found"));
     }
 	
-	@DeleteMapping("/locaitons/{locationId}/accomodation/{accomodationId}")
+	@DeleteMapping("/locations/{locationId}/accomodations/{accomodationId}")
     public ResponseEntity < ? > deleteAccomodation(@PathVariable(value = "locationId") Long locationId,
         @PathVariable(value = "accomodationId") Long accomodationId) throws ResourceNotFoundException {
         return accomodationRepository.findByIdAndLocationId(accomodationId, locationId).map(accomodation -> {
@@ -72,5 +71,12 @@ public class AccomodationController {
         }).orElseThrow(() -> new ResourceNotFoundException(
             "Accomodation not found with id " + accomodationId + " and locationId " + locationId));
     }
+	
+	@GetMapping("/accomodations/{accomodationId}")
+	public ResponseEntity<Accomodation> getRoom(@PathVariable(value="accomodationId") Long accomodationId) {
+		Accomodation accomodation = accomodationRepository.findById(accomodationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Accomodation not found :: " + accomodationId));
+		return ResponseEntity.ok(accomodation);
+	}
 
 }
