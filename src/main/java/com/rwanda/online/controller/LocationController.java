@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class LocationController {
 	}
 	
 	@GetMapping("locations/{id}")
-	public ResponseEntity <Location> getLocationById(
+	public ResponseEntity <Location> getLocationById(HttpServletRequest request,
 			@PathVariable(value = "id") Long locationId) throws ResourceNotFoundException{
 		
 		Location location = locationRepository.findById(locationId)
@@ -43,12 +44,12 @@ public class LocationController {
 	}
 	
 	@PostMapping("/locations")
-	public Location createLocation(@Valid @RequestBody Location location) {
+	public Location createLocation(HttpServletRequest request, @Valid @RequestBody Location location) {
 		return locationRepository.save(location);
 	}
 	
 	@PutMapping("/locations/{id}") 
-	public ResponseEntity <Location> updateLocation(@PathVariable(value="id") Long locationId,
+	public ResponseEntity <Location> updateLocation(HttpServletRequest request, @PathVariable(value="id") Long locationId,
 			@Valid @RequestBody Location locationDetails) throws ResourceNotFoundException {
 		Location location = locationRepository.findById(locationId)
 				.orElseThrow(() -> new ResourceNotFoundException("Location not found :: " + locationId));
@@ -58,10 +59,10 @@ public class LocationController {
 	}
 	
 	@DeleteMapping("/locations/{id}")
-	public Map<String, Boolean> deleteLocation(
+	public Map<String, Boolean> deleteLocation(HttpServletRequest request,
 			@PathVariable(value="id") Long locationId) throws ResourceNotFoundException{
 		Location location = locationRepository.findById(locationId)
-				.orElseThrow(() -> new ResourceNotFoundException("Instructor not found :: " + locationId));
+				.orElseThrow(() -> new ResourceNotFoundException("Location not found :: " + locationId));
 		locationRepository.delete(location);
 		Map<String, Boolean> response = new HashMap<> ();
 		response.put("deleted", Boolean.TRUE);
