@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "rooms")
-public class room {
+public class Room {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="room_id")
@@ -26,6 +26,51 @@ public class room {
 	private Long accomodation_id;
 	
 	private String images;
+
+	public Room() {
+		super();
+	}
+
+	public Room(String type, Long accomodation_id, String images) {
+		super();
+		this.type = type;
+		this.accomodation_id = accomodation_id;
+		this.images = images;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Long getAccomodation_id() {
+		return accomodation_id;
+	}
+
+	public void setAccomodation_id(Long accomodation_id) {
+		this.accomodation_id = accomodation_id;
+	}
+
+	public String getImages() {
+		return images;
+	}
+
+	public void setImages(String images) {
+		this.images = images;
+	}
+	
+	
 	
 
 }
