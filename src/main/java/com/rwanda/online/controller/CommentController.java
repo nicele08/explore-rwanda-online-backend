@@ -2,6 +2,7 @@ package com.rwanda.online.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.rwanda.online.exception.ResourceNotFoundException;
 import com.rwanda.online.model.Comment;
 import com.rwanda.online.repository.TripRepository;
@@ -36,27 +36,28 @@ public class CommentController {
 	private TripRepository tripRepository;
 	
 	@GetMapping("/trips/{tripId}/comments")
-	public List<Comment> getcommentsBytrip(@PathVariable(value="tripId") Long tripId){
+	public List<Comment> getcommentsBytrip(HttpServletRequest request, @PathVariable(value="tripId") Long tripId){
 		return commentRepository.findByTripId(tripId);
 	}
 	
-	@PostMapping("/users/{userId}/trips/{tripId}/comments")
-    public Comment createcomment(@PathVariable(value = "tripId") Long tripId,
-    		@PathVariable(value = "userId") Long userId,
+	@PostMapping("/trips/{tripId}/comments")
+    public Comment createcomment(HttpServletRequest request, @PathVariable(value = "tripId") Long tripId,
         @Valid @RequestBody Comment comment) throws ResourceNotFoundException {
+		
+		Long userId = (Long) request.getAttribute("userId");
+		
 		if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("user not found");
         }
         return tripRepository.findById(tripId).map(trip -> {
         	comment.setTrip(trip);
-        	comment.setComment(comment.getComment());
         	comment.setUser(userRepository.getOne(userId));
         	return commentRepository.save(comment);
         }).orElseThrow(() -> new ResourceNotFoundException("trip not found"));
     }
 	
 	@PutMapping("/trips/{tripId}/comments/{commentId}")
-    public Comment updatecomment(@PathVariable(value = "tripId") Long tripId,
+    public Comment updatecomment(HttpServletRequest request, @PathVariable(value = "tripId") Long tripId,
         @PathVariable(value = "commentId") Long commentId, @Valid @RequestBody Comment commentDetails)
     throws ResourceNotFoundException {
         if (!tripRepository.existsById(tripId)) {
@@ -70,7 +71,7 @@ public class CommentController {
     }
 	
 	@DeleteMapping("/trips/{tripId}/comments/{commentId}")
-    public ResponseEntity < ? > deletecomment(@PathVariable(value = "tripId") Long tripId,
+    public ResponseEntity < ? > deletecomment(HttpServletRequest request, @PathVariable(value = "tripId") Long tripId,
         @PathVariable(value = "commentId") Long commentId) throws ResourceNotFoundException {
         return commentRepository.findByIdAndTripId(commentId, tripId).map(comment -> {
             commentRepository.delete(comment);
@@ -80,7 +81,7 @@ public class CommentController {
     }
 	
 	@GetMapping("/comments/{commentId}")
-	public ResponseEntity<Comment> getRoom(@PathVariable(value="commentId") Long commentId) {
+	public ResponseEntity<Comment> getRoom(HttpServletRequest request, @PathVariable(value="commentId") Long commentId) {
 		Comment comment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment not found :: " + commentId));
 		return ResponseEntity.ok(comment);

@@ -23,6 +23,9 @@ public class Room extends AuditModel {
 	@Column(name="room_id")
 	private Long id;
 	
+	@Column(name = "name", unique = true, nullable = false, length = 20)
+	private String name;
+	
 	@Column(name = "type", nullable = false, length = 20)
 	private String type;
 	
@@ -92,7 +95,13 @@ public class Room extends AuditModel {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 }

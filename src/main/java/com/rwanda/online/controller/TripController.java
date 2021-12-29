@@ -3,6 +3,7 @@ package com.rwanda.online.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,20 +43,22 @@ public class TripController {
 	private AccomodationRepository accomodationRepository;
 	
 	@GetMapping("/locations/{locationId}/trips")
-	public List<Trip> getTripsByLocation(@PathVariable(value="locationId") Long locationId){
+	public List<Trip> getTripsByLocation(HttpServletRequest request, @PathVariable(value="locationId") Long locationId){
 		return tripRepository.findByLocationId(locationId);
 	}
 	
-	@PostMapping("users/{userId}/locations/{locationId}/accomodations/{accomodationId}/trips")
-    public Trip createTrip(@PathVariable(value = "locationId") Long locationId,
-    		@PathVariable(value = "userId") Long userId,
+	@PostMapping("locations/{locationId}/accomodations/{accomodationId}/trips")
+    public Trip createTrip(HttpServletRequest request, @PathVariable(value = "locationId") Long locationId,
     		@PathVariable(value = "accomodationId") Long accomodationId,
         @Valid @RequestBody Trip trip) throws ResourceNotFoundException {
+		
+		Long userId = (Long) request.getAttribute("userId");
+		
 		if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("requester not found");
         }
 		if (!accomodationRepository.existsById(accomodationId)) {
-            throw new ResourceNotFoundException("requester not found");
+            throw new ResourceNotFoundException("accomodation not found");
         }
         return locationRepository.findById(locationId).map(location -> {
         	if(location.getId() == locationId) {
@@ -69,12 +72,14 @@ public class TripController {
         }).orElseThrow(() -> new ResourceNotFoundException("location not found"));
     }
 	
-	@PutMapping("/users/{userId}/locations/{locationId}/accomodations/{accomodationId}/trips/{tripId}")
-    public Trip updateTrip(@PathVariable(value = "locationId") Long locationId,
+	@PutMapping("/locations/{locationId}/accomodations/{accomodationId}/trips/{tripId}")
+    public Trip updateTrip(HttpServletRequest request, @PathVariable(value = "locationId") Long locationId,
     		@PathVariable(value = "accomodationId") Long accomodationId,
-    		@PathVariable(value = "userId") Long userId,
         @PathVariable(value = "tripId") Long tripId, @Valid @RequestBody Trip tripDetails)
     throws ResourceNotFoundException {
+		
+		Long userId = (Long) request.getAttribute("userId");
+		
 		if( !userRepository.existsById(userId)) {
 			throw new ResourceNotFoundException("requester not found");
 		}
@@ -92,14 +97,13 @@ public class TripController {
             trip.setTravelType(tripDetails.getTravelType());
             trip.setAccomodation(accomodationRepository.getOne(accomodationId));
             trip.setTravelReason(tripDetails.getTravelReason());
-            trip.setLocation(locationRepository.getOne(locationId));
             trip.setRequestStatus(tripDetails.getRequestStatus());
             return tripRepository.save(trip);
         }).orElseThrow(() -> new ResourceNotFoundException("trip id not found"));
     }
 	
 	@DeleteMapping("/locations/{locationId}/trips/{tripId}")
-    public ResponseEntity < ? > deleteTrip(@PathVariable(value = "locationId") Long locationId,
+    public ResponseEntity < ? > deleteTrip(HttpServletRequest request, @PathVariable(value = "locationId") Long locationId,
         @PathVariable(value = "tripId") Long tripId) throws ResourceNotFoundException {
         return tripRepository.findByIdAndLocationId(tripId, locationId).map(trip -> {
             tripRepository.delete(trip);
@@ -109,7 +113,7 @@ public class TripController {
     }
 	
 	@GetMapping("/trips/{tripId}")
-	public ResponseEntity<Trip> getRoom(@PathVariable(value="tripId") Long tripId) {
+	public ResponseEntity<Trip> getRoom(HttpServletRequest request, @PathVariable(value="tripId") Long tripId) {
 		Trip trip = tripRepository.findById(tripId)
 				.orElseThrow(() -> new ResourceNotFoundException("Trip not found :: " + tripId));
 		return ResponseEntity.ok(trip);

@@ -14,10 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
-@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 @Entity
 @Table(name = "users")
 public class User extends AuditModel{
@@ -43,6 +40,9 @@ public class User extends AuditModel{
 	
 	@Column(name = "enabled")
     private boolean enabled;
+	
+	@Column(name = "role", length = 1, columnDefinition = "integer default 0")
+	private int role;
 	
 	@OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -126,6 +126,12 @@ public class User extends AuditModel{
 		this.requesters = requesters;
 	}
 	
+	public int getRole() {
+		return role;
+	}
 	
+	public void setRole(int role) {
+		this.role = role;
+	}
 	
 }
